@@ -176,6 +176,33 @@ function crear_retador(nivel){
 	}
 }
 
+// DETERMINAR EL FRONTLINE
+function determinar_frontline(){
+		// 1.1 INICIALIZAR EL FRONTLINE USANDO LA PRIMERA COLUMNA
+		for(i=0;i<unidades_por_columna;i++){
+			frontline_retador[i]=equipo_retador[i][0];
+		}
+		for(i=0;i<unidades_por_columna;i++){
+			frontline_jugador[i]=equipo_jugador[i][unidades_por_fila-1];
+		}
+		// 1.2 DETERMINAR FRONTLINE MEDIANTE EL MENOR X DE LA FILA.
+		for(i=0;i<unidades_por_columna;i++){
+			for(j=0;j<unidades_por_fila;j++){
+				if (frontline_retador[i].x>equipo_retador[i][j].x){
+					frontline_retador[i]=equipo_retador[i][j];
+				}
+			}
+		}
+		// 1.2 DETERMINAR FRONTLINE MEDIANTE EL MAYOR X DE LA FILA.
+		for(i=0;i<unidades_por_columna;i++){
+			for(j=0;j<unidades_por_fila;j++){
+				if (frontline_jugador[i].x<equipo_jugador[i][j].x){
+					frontline_jugador[i]=equipo_jugador[i][j];
+				}
+			}
+		}
+}
+
 // ALMACENAR KEYS
 var keysDown = {};
 addEventListener("keydown", function (e) {
@@ -207,40 +234,41 @@ var update = function (modifier) {
 		// 6. REPETIR
 
 		/* 1. DETERMINAR EL FRONTLINE */
-			// 1.1 INICIALIZAR EL FRONTLINE A LA PRIMERA COLUMNA
-		for(i=0;i<unidades_por_columna;i++){
-			frontline_retador[i]=equipo_retador[i][0];
-		}
-			// 1.2 DETERMINAR FRONTLINE MEDIANTE EL MENOR X DE LA FILA.
-		for(i=0;i<unidades_por_columna;i++){
-			for(j=0;j<unidades_por_fila;j++){
-				if (frontline_retador[i].x>equipo_retador[i][j].x){
-					frontline_retador[i]=equipo_retador[i][j];
-				}
-			}
-		}
-		/* 1. DETERMINAR EL FRONTLINE */
+		determinar_frontline();
+		
 
 		/* 2. y 3. AVANZAR CUALQUIER UNIDAD */
 		for(i=0;i<unidades_por_columna;i++){  // RECORRER LA MATRIZ COMPLETA
 			for(j=0;j<unidades_por_fila;j++){ // RECORRER LA MATRIZ COMPLETA
-				rangoUnidad = equipo_jugador[i][j].x + equipo_jugador[i][j].width + equipo_jugador[i][j].rango * rango;
+				rango_unidad_jugador = equipo_jugador[i][j].x + equipo_jugador[i][j].width + equipo_jugador[i][j].rango * rango;
+				rango_unidad_retador = equipo_retador[i][j].x - equipo_retador[i][j].width - equipo_retador[i][j].rango * rango;
 				for(y=0;y<unidades_por_fila;y++){ // RECORRER ELEMENTOS ENEMIGOS DE LA MISMA FILA
 					if (equipo_retador[i][y]==frontline_retador[i]) { // SI ELEMENTO ENEMIGO ES FRONTLINE
-						if(rangoUnidad<equipo_retador[i][y].x){	// SI UNIDAD ESTA EN RANGO CON FRONTLINE 
+						if(rango_unidad_jugador<equipo_retador[i][y].x){	// SI UNIDAD ESTA EN RANGO CON FRONTLINE 
 							if(j==unidades_por_fila-1){			// SI ES FRONTLINE DEL EJERCITO PROPIO (TO.DO)
 								equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;	// AVANZAR LO MÁS POSIBLE
 							}else{ // SI NO ES FRONTLINE DEL EJERCITO PROPIO (2DA COLUMNA)
 								if(equipo_jugador[i][j].x + equipo_jugador[i][j].width < equipo_jugador[i][j+1].x){
-									// alert("x( i:"+i+", j:"+j+"):"+equipo_jugador[i][j].x+"   y( i:"+i+", j:"+j+1+"):"+equipo_jugador[i][j+1].x+equipo_jugador[i][j+1].width)
 									equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;
 								}
 							}
 						}else{
 							// ATACAR
 						}
-						
-					};
+					}
+					if (equipo_jugador[i][y]==frontline_jugador[i]) {
+						if(rango_unidad_retador>equipo_jugador[i][y].x){
+							if(j==0){	
+								equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
+							}else{
+								if(equipo_retador[i][j].x > equipo_retador[i][j-1].x + equipo_retador[i][j-1].width){
+									equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
+								}
+							}
+						}else{
+							// ATACAR
+						}
+					}
 					
 				}
 			}
