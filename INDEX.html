@@ -3,8 +3,48 @@
 <head>
 	<meta charset="UTF-8">
 	<title></title>
+
 </head>
 <body>
+	<div id="contenedor"></div>
+	<div id="unidades">
+			<div onclick="cambiar_unidad_tipo(0)" class="tipoUnidad" id="soldado"></div>
+			<div onclick="cambiar_unidad_tipo(1)" class="tipoUnidad" id="arquero"></div>
+			<div onclick="cambiar_unidad_tipo(2)" class="tipoUnidad" id="mago"></div>
+	</div>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+		#contenedor{
+			float: left;
+			margin:0px;
+		}
+		#unidades{
+			float: left;
+			margin-left: 40px;
+			height: 144px;
+			width: 48px;
+			border: 1px solid;
+		}
+		.tipoUnidad{
+			float: left;
+			margin:0;
+			border: 1px solid;
+			height: 46px;
+			width: 46px;
+		}
+		#soldado{
+			background-color: black;
+		}
+		#arquero{
+			background-color: red;
+		}
+		#mago{
+			background-color: blue;
+		}
+	</style>
 	<script type="text/javascript" src="juego.js"></script>
+	
 </body>
 </html>
