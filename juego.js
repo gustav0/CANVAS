@@ -54,8 +54,8 @@ function unidad_null(id){
 	this.rango		= 0;
 	this.velocidad	= 0;
 	this.colision	= false;
-	this.width		= 50;
-	this.height		= 50;
+	this.width		= 48;
+	this.height		= 48;
 	this.parte		= 0;
 }
 function unidad_soldado(id){
@@ -64,8 +64,8 @@ function unidad_soldado(id){
 	this.rango 		= 0;
 	this.velocidad 	= 0.7;
 	this.colision	= false;
-	this.width		= 50;
-	this.height		= 50;
+	this.width		= 48;
+	this.height		= 48;
 	this.parte		= 0;
 }
 function unidad_arquero(id){
@@ -74,8 +74,8 @@ function unidad_arquero(id){
 	this.rango 		= 3;
 	this.velocidad 	= 0.5;
 	this.colision	= false;
-	this.width		= 50;
-	this.height		= 50;
+	this.width		= 48;
+	this.height		= 48;
 	this.parte		= 0;
 }
 function unidad_mago(id){
@@ -84,8 +84,8 @@ function unidad_mago(id){
 	this.rango 		= 2;
 	this.velocidad 	= 0.4;
 	this.colision	= false;
-	this.width		= 50;
-	this.height		= 50;
+	this.width		= 48;
+	this.height		= 48;
 	this.parte		= 0;
 }
 
@@ -222,16 +222,24 @@ var update = function (modifier) {
 		/* 1. DETERMINAR EL FRONTLINE */
 
 		/* 2. y 3. AVANZAR CUALQUIER UNIDAD */
-		for(i=0;i<unidades_por_columna;i++){
-			for(j=0;j<unidades_por_fila;j++){
+		for(i=0;i<unidades_por_columna;i++){  // RECORRER LA MATRIZ COMPLETA
+			for(j=0;j<unidades_por_fila;j++){ // RECORRER LA MATRIZ COMPLETA
 				rangoUnidad = equipo_jugador[i][j].x + equipo_jugador[i][j].width + equipo_jugador[i][j].rango * rango;
-				for(y=0;y<unidades_por_fila;y++){
-					if (equipo_retador[i][y]==frontline_retador[i]) {
-						if(rangoUnidad<equipo_retador[i][y].x){
-							equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;
+				for(y=0;y<unidades_por_fila;y++){ // RECORRER ELEMENTOS ENEMIGOS DE LA MISMA FILA
+					if (equipo_retador[i][y]==frontline_retador[i]) { // SI ELEMENTO ENEMIGO ES FRONTLINE
+						if(rangoUnidad<equipo_retador[i][y].x){	// SI UNIDAD ESTA EN RANGO CON FRONTLINE 
+							if(j==unidades_por_fila-1){			// SI ES FRONTLINE DEL EJERCITO PROPIO (TO.DO)
+								equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;	// AVANZAR LO MÁS POSIBLE
+							}else{ // SI NO ES FRONTLINE DEL EJERCITO PROPIO (2DA COLUMNA)
+								if(equipo_jugador[i][j].x + equipo_jugador[i][j].width < equipo_jugador[i][j+1].x){
+									// alert("x( i:"+i+", j:"+j+"):"+equipo_jugador[i][j].x+"   y( i:"+i+", j:"+j+1+"):"+equipo_jugador[i][j+1].x+equipo_jugador[i][j+1].width)
+									equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;
+								}
+							}
 						}else{
 							// ATACAR
 						}
+						
 					};
 					
 				}
