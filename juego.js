@@ -77,7 +77,7 @@ function unidad_soldado(id){
 	this.id			= id || -1;
 	this.tipo 		= 0;
 	this.rango 		= 0;
-	this.velocidad 	= 0.7;
+	this.velocidad 	= .355;
 	this.colision	= true;
 	this.width		= 48;
 	this.height		= 48;
@@ -87,7 +87,7 @@ function unidad_arquero(id){
 	this.id			= id || -1;
 	this.tipo 		= 1;
 	this.rango 		= 3;
-	this.velocidad 	= 0.5;
+	this.velocidad 	= .3;
 	this.colision	= true;
 	this.width		= 48;
 	this.height		= 48;
@@ -97,7 +97,7 @@ function unidad_mago(id){
 	this.id			= id || -1;
 	this.tipo 		= 2;
 	this.rango 		= 2;
-	this.velocidad 	= 0.4;
+	this.velocidad 	= .3;
 	this.colision	= true;
 	this.width		= 48;
 	this.height		= 48;
@@ -195,13 +195,13 @@ function crear_retador(nivel){
 				random = Math.floor(Math.random() * (max - min + 1)) + min;
 				switch(parseInt(random/10)){
 					case 0:
-						equipo_retador[i][j] = new unidad_null((i*7+j*11)+2);
+						equipo_retador[i][j] = new unidad_soldado((i*7+j*11)+2);
 						break;
 					case 1:
-						equipo_retador[i][j] = new unidad_null((i*7+j*11)+2);
+						equipo_retador[i][j] = new unidad_mago((i*7+j*11)+2);
 						break;
 					case 2:
-						equipo_retador[i][j] = new unidad_null((i*7+j*11)+2);
+						equipo_retador[i][j] = new unidad_arquero((i*7+j*11)+2);
 						break;
 				}
 			}
@@ -253,7 +253,7 @@ addEventListener("mousedown",function(e){
     keysDown[-1]=true
 },false);
 addEventListener("mouseup",function(e){
-    delete keysDown[-1]
+    delete keysDown[-1];
 },false);
 
 // HACER UPDATE DE LOS OBJETOS
@@ -284,7 +284,7 @@ var update = function (modifier) {
 				rango_unidad_retador = equipo_retador[i][j].x - equipo_retador[i][j].width - equipo_retador[i][j].rango * rango;
 				for(y=0;y<unidades_por_fila;y++){ // RECORRER ELEMENTOS ENEMIGOS DE LA MISMA FILA
 					if (equipo_retador[i][y]==frontline_retador[i]) { // SI ELEMENTO ENEMIGO ES FRONTLINE
-						if(rango_unidad_jugador<equipo_retador[i][y].x){	// SI UNIDAD ESTA EN RANGO CON FRONTLINE 
+						if(rango_unidad_jugador<equipo_retador[i][y].x){ // SI UNIDAD ESTA EN RANGO CON FRONTLINE 
 							if(j==unidades_por_fila-1){
 								if(equipo_jugador[i][j].velocidad>0){
 									equipo_jugador[i][j].x += 1 * equipo_jugador[i][j].velocidad;	// AVANZAR LO MÁS POSIBLE
@@ -301,27 +301,33 @@ var update = function (modifier) {
 									}else{
 										equipo_jugador[i][k] = equipo_jugador[i][j];
 										equipo_jugador[i][j] = new unidad_null();
+										equipo_jugador[i][j].x = 2;
 									}
 								}
 							}
 						}else{
 							// ATACAR
 						}
-					}
-					if (equipo_jugador[i][y]==frontline_jugador[i]) {
-						if(rango_unidad_retador>equipo_jugador[i][y].x){
+					}//REPETIR PARA EL RETADOR
+					if (equipo_jugador[i][y]==frontline_jugador[i]) { // SI ELEMENTO ENEMIGO ES FRONTLINE
+						if(rango_unidad_retador>equipo_jugador[i][y].x){ // SI UNIDAD NO ESTA EN RANGO CON FRONTLINE 
 							if(j==0){	
 								if(equipo_retador[i][j].velocidad>0){
-									equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
+										equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
 								}
 							}else{
 								for(k=j-1;k<unidades_por_fila;k++){
 									if(equipo_retador[i][k].colision){
-										if(equipo_retador[i][j].x > equipo_retador[i][j-1].x + equipo_retador[i][j-1].width){
+										if(equipo_retador[i][j].x > equipo_retador[i][k].x + equipo_retador[i][k].width){
 											if(equipo_retador[i][j].velocidad>0){
 												equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
 											}
 										}
+										break;
+									}else{
+										equipo_retador[i][k] = equipo_retador[i][j];
+										equipo_retador[i][j] = new unidad_null();
+										equipo_retador[i][j].x = 802;
 									}
 								}
 							}
@@ -329,7 +335,6 @@ var update = function (modifier) {
 							// ATACAR
 						}
 					}
-					
 				}
 			}
 		}
