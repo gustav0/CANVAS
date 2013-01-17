@@ -14,7 +14,7 @@ var colision = false;
 var len 				 = 50;
 var unidades_por_columna = 6;
 var unidades_por_fila  	 = 8;
-var crear_unidad_tipo	 = 99;
+var crear_unidad_tipo	 = 0;
 var rango				 = 48;
 
 // IMAGEN DE FONDO
@@ -62,6 +62,9 @@ function unidad_null(id){
 	this.width		= 48;
 	this.height		= 48;
 	this.parte		= 0;
+	this.vida 		= 0;
+	this.ataque		= 0;
+	this.defensa	= 0;
 }
 function unidad_castillo(id){
 	this.id			= id || -1;
@@ -72,6 +75,9 @@ function unidad_castillo(id){
 	this.width		= 48;
 	this.height		= 48;
 	this.parte		= 0;
+	this.vida 		= -1;
+	this.ataque		= 0;
+	this.defensa	= 0;
 }
 function unidad_soldado(id){
 	this.id			= id || -1;
@@ -82,6 +88,9 @@ function unidad_soldado(id){
 	this.width		= 48;
 	this.height		= 48;
 	this.parte		= 0;
+	this.vida 		= 300;
+	this.ataque		= 12;
+	this.defensa	= 4;
 }
 function unidad_arquero(id){
 	this.id			= id || -1;
@@ -92,6 +101,9 @@ function unidad_arquero(id){
 	this.width		= 48;
 	this.height		= 48;
 	this.parte		= 0;
+	this.vida 		= 140;
+	this.ataque		= 9;
+	this.defensa	= 2;
 }
 function unidad_mago(id){
 	this.id			= id || -1;
@@ -102,6 +114,9 @@ function unidad_mago(id){
 	this.width		= 48;
 	this.height		= 48;
 	this.parte		= 0;
+	this.vida 		= 200;
+	this.ataque		= 13;
+	this.defensa	= 1;
 }
 
 // DEFINICIÓN DE EQUIPOS
@@ -119,29 +134,26 @@ limpiar_campo();
 crear_retador(1);
 
 // LLENAR CAMPO DE BATALLA CON NULLS
-function crear_castillos(){
-	for(i=0;i<2;i++){
 
-	}
-}
 function limpiar_campo(){
 	for(i=0;i<unidades_por_columna;i++){
-		for(j=0;j<unidades_por_fila;j++){
-			if(j==0){
-				equipo_jugador[i][j] = new unidad_castillo();
-			}else{
-				equipo_jugador[i][j] = new unidad_null();
-			}
-			equipo_jugador[i][j].x = 2 + j*len; //52 porque 50 es el marco del tablero.
-			equipo_jugador[i][j].y = 52 + i*len;
+		for(j=1;j<unidades_por_fila;j++){
+			equipo_jugador[i][j] = new unidad_null();
+			equipo_jugador[i][j].x = 2 + j*len;
+			equipo_jugador[i][j].y = 52 + i*len; //52 porque 50 es el marco del tablero.
 		}
+		equipo_jugador[i][0] = new unidad_castillo();
+		equipo_jugador[i][0].x = 2;
+		equipo_jugador[i][0].y = 52+i*len;
 	}
 }
+
 // CREAR UNIDADES EN EL CAMPO DE BATALLA
 function iniciar_crear_unidad(){
 	for(i=0;i<unidades_por_columna;i++){
 		for(j=0;j<unidades_por_fila;j++){
 			unidad = equipo_jugador[i][j];
+			unidad_retador = equipo_retador[i][j];
 			if(clickdX>unidad.x && clickdX<unidad.x+unidad.width){
 				if(clickdY>unidad.y && clickdY<unidad.y+unidad.height){
 					if(equipo_jugador[i][j].tipo<0){
@@ -159,13 +171,21 @@ function iniciar_crear_unidad(){
 							  equipo_jugador[i][j] = new unidad_castillo(i*7+j*11);
 							  break;
 						}
-					}else{
-
 					}
 					equipo_jugador[i][j].x = unidad.x;
 					equipo_jugador[i][j].y = unidad.y;
 				}
 			}
+
+			if(clickdX>unidad_retador.x && clickdX<unidad_retador.x+unidad_retador.width){
+				if(clickdY>unidad_retador.y && clickdY<unidad_retador.y+unidad_retador.height){
+					if(equipo_retador[i][j].tipo != -1 && equipo_retador[i][j].tipo != 99){
+						equipo_retador[i][j] = new unidad_null();
+						break;
+					}
+				}
+			}
+
 		}
 	}
 }
@@ -191,20 +211,27 @@ function crear_retador(nivel){
 		for(j=0;j<unidades_por_fila;j++){
 			if(j==unidades_por_fila-1){
 				equipo_retador[i][j] = new unidad_castillo();
-			}else{
-				random = Math.floor(Math.random() * (max - min + 1)) + min;
-				switch(parseInt(random/10)){
-					case 0:
-						equipo_retador[i][j] = new unidad_soldado((i*7+j*11)+2);
-						break;
-					case 1:
-						equipo_retador[i][j] = new unidad_mago((i*7+j*11)+2);
-						break;
-					case 2:
-						equipo_retador[i][j] = new unidad_arquero((i*7+j*11)+2);
-						break;
-				}
+			}else if(j==0){
+				equipo_retador[i][j] = new unidad_soldado();
+			}else if(j==1){
+				equipo_retador[i][j] = new unidad_mago();
+			}else if(j==2){
+				equipo_retador[i][j] = new unidad_arquero();
 			}
+			// 	else{
+			// 	random = Math.floor(Math.random() * (max - min + 1)) + min;
+			// 	switch(parseInt(random/10)){
+			// 		case 0:
+			// 			equipo_retador[i][j] = new unidad_soldado((i*7+j*11)+2);
+			// 			break;
+			// 		case 1:
+			// 			equipo_retador[i][j] = new unidad_mago((i*7+j*11)+2);
+			// 			break;
+			// 		case 2:
+			// 			equipo_retador[i][j] = new unidad_arquero((i*7+j*11)+2);
+			// 			break;
+			// 	}
+			// }
 			equipo_retador[i][j].x = 452 + j*len;
 			equipo_retador[i][j].y = 52 + i*len;
 		}
@@ -269,8 +296,6 @@ var update = function (modifier) {
 		// 1. DETERMINAR EL "FRONTLINE"
 		// 2. AVANZAR PRIMERA COLUMNA HASTA TENER RANGO CON EL FRONTLINE
 		// 3. AVANZAR SEGUNDA COLUMNA HASTA TENER RANGO CONEL FRONTLINE O COLISION DE EQUIPO
-		// 4. ATACAR CON LA PRIMERA FILA AL FRONTLINE
-		// 5. ATACAR CON LA SEGUNDA FILA AL FRONTLINE
 		// 6. REPETIR
 
 		/* 1. DETERMINAR EL FRONTLINE */
@@ -306,17 +331,24 @@ var update = function (modifier) {
 								}
 							}
 						}else{
-							// ATACAR
+							if(equipo_jugador[i][j].ataque>0){
+								if(equipo_retador[i][y].vida<=0){
+									equipo_retador[i][y] = new unidad_null();
+								}else{
+									equipo_retador[i][y].vida -= 1;
+								}
+							}
+							
 						}
 					}//REPETIR PARA EL RETADOR
 					if (equipo_jugador[i][y]==frontline_jugador[i]) { // SI ELEMENTO ENEMIGO ES FRONTLINE
 						if(rango_unidad_retador>equipo_jugador[i][y].x){ // SI UNIDAD NO ESTA EN RANGO CON FRONTLINE 
-							if(j==0){	
+							if(j==0){
 								if(equipo_retador[i][j].velocidad>0){
-										equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
+									equipo_retador[i][j].x -= 1 * equipo_retador[i][j].velocidad;
 								}
 							}else{
-								for(k=j-1;k<unidades_por_fila;k++){
+								for(k=j-1;k<unidades_por_fila-1;k++){
 									if(equipo_retador[i][k].colision){
 										if(equipo_retador[i][j].x > equipo_retador[i][k].x + equipo_retador[i][k].width){
 											if(equipo_retador[i][j].velocidad>0){
@@ -332,7 +364,13 @@ var update = function (modifier) {
 								}
 							}
 						}else{
-							// ATACAR
+							if(equipo_retador[i][j].ataque>0){
+								if(equipo_jugador[i][y].vida<=0){
+									equipo_jugador[i][y] = new unidad_null();
+								}else{
+									equipo_jugador[i][y].vida -= 1;
+								}
+							}
 						}
 					}
 				}
@@ -347,6 +385,8 @@ var render = function () {
 		ctx.drawImage(bgImage, 0, 0);
 	}
 	if (soldadoReady) {
+		ctx.font      = "normal 9px Verdana";
+		ctx.fillStyle = "#3bff00";
 		for(i=0;i<unidades_por_columna;i++){
 			for(j=0;j<unidades_por_fila;j++){
 				switch(equipo_jugador[i][j].tipo){
@@ -382,7 +422,10 @@ var render = function () {
 					case 99:
 					  ctx.drawImage(castilloImagen, equipo_retador[i][j].x, equipo_retador[i][j].y);
 					  break;
+
 				}
+			ctx.fillText(equipo_jugador[i][j].vida, equipo_jugador[i][j].x+7, equipo_jugador[i][j].y+25);
+			ctx.fillText(equipo_retador[i][j].vida, equipo_retador[i][j].x+7, equipo_retador[i][j].y+25);
 			}
 		}
 	}
