@@ -11,45 +11,48 @@ var iniciar = false;
 var colision = false;
 
 //VARIABLES FIJAS
+actual = 0;
+posicionJugador = 0;
+posicionRetador = 0;
+
 var len 				 = 50;
 var unidades_por_columna = 6;
 var unidades_por_fila  	 = 8;
 var crear_unidad_tipo	 = 0;
 var rango				 = 48;
-
+var posicion=new Array();
+for(i=0;i<3;i++){
+	posicion[i]= new Array();
+	for(j=0;j<3;j++){
+		posicion[i][j] = new variable_sprite(i*42,j*42);
+	}
+}
+function variable_sprite(posicionX,posicionY){
+	this.x = posicionX;
+	this.y = posicionY;
+}
 // IMAGEN DE FONDO
-var bgReady = false;
 var bgImage = new Image();
-bgImage.onload = function () { bgReady = true; };
 bgImage.src = "images/background.png";
 
-
 // IMAGEN - SOLDADO
-var soldadoReady = false;
 var soldadoImagen = new Image();
-soldadoImagen.onload = function () { soldadoReady = true; };
-soldadoImagen.src = "images/soldado.png";
+soldadoImagen.src = "images/sprite/soldado.png";
 
 // IMAGEN - ARQUERO
-var arqueroReady = false;
 var arqueroImagen = new Image();
-arqueroImagen.onload = function () { arqueroReady = true; };
 arqueroImagen.src = "images/arquero.png";
 
 // IMAGEN - MAGO
-var magoReady = false;
 var magoImagen = new Image();
-magoImagen.onload = function () { magoReady = true; };
 magoImagen.src = "images/mago.png";
 
 // IMAGEN - UNIDAD SIN IMAGEN (UNIDAD NULA)
 var unidadSinImagen = new Image();
-unidadSinImagen.onload = function () { magoReady = true; };
 unidadSinImagen.src = "images/sinimagen.png";
 
 // IMAGEN - UNIDAD SIN IMAGEN (UNIDAD NULA)
 var castilloImagen = new Image();
-castilloImagen.onload = function () { magoReady = true; };
 castilloImagen.src = "images/castillo.png";
 
 // DEFINICIÓN DE UNIDADES
@@ -288,6 +291,9 @@ var update = function (modifier) {
 	if (38 in keysDown) {
 		unidadSinImagen.src = "";
 		iniciar = true;
+		posicionJugador = 2;
+		posicionRetador = 1;
+		bandera_sprite = true;
 	}
 	if(keysDown[-1]){
 			iniciar_crear_unidad();
@@ -380,11 +386,11 @@ var update = function (modifier) {
 
 };
 // DIBUJAR EN CANVAS
-var render = function () {
-	if (bgReady) {
+var animar = function () {
+	if (true) {
 		ctx.drawImage(bgImage, 0, 0);
 	}
-	if (soldadoReady) {
+	if (true) {
 		ctx.font      = "normal 9px Verdana";
 		ctx.fillStyle = "#3bff00";
 		for(i=0;i<unidades_por_columna;i++){
@@ -394,7 +400,8 @@ var render = function () {
 					  ctx.drawImage(unidadSinImagen, equipo_jugador[i][j].x, equipo_jugador[i][j].y);
 					  break;
 					case 0:
-					  ctx.drawImage(soldadoImagen, equipo_jugador[i][j].x, equipo_jugador[i][j].y);
+				      //ctx.drawImage(soldadoImagen,srcX,srcY,srcW,srcH,destX,destY,destW,destH);
+					  ctx.drawImage(soldadoImagen,posicion[actual][posicionJugador].x,posicion[actual][posicionJugador].y,42,42,equipo_jugador[i][j].x, equipo_jugador[i][j].y,48,48);
 					  break;
 					case 1:
 					  ctx.drawImage(arqueroImagen, equipo_jugador[i][j].x, equipo_jugador[i][j].y);
@@ -411,7 +418,7 @@ var render = function () {
 					  ctx.drawImage(unidadSinImagen, equipo_retador[i][j].x, equipo_retador[i][j].y);
 					  break;
 					case 0:
-					  ctx.drawImage(soldadoImagen, equipo_retador[i][j].x, equipo_retador[i][j].y);
+					  ctx.drawImage(soldadoImagen,posicion[actual][posicionRetador].x,posicion[actual][posicionRetador].y,42,42,equipo_retador[i][j].x, equipo_retador[i][j].y,48,48);
 					  break;
 					case 1:
 					  ctx.drawImage(arqueroImagen, equipo_retador[i][j].x, equipo_retador[i][j].y);
@@ -424,8 +431,12 @@ var render = function () {
 					  break;
 
 				}
-			ctx.fillText(equipo_jugador[i][j].vida, equipo_jugador[i][j].x+7, equipo_jugador[i][j].y+25);
-			ctx.fillText(equipo_retador[i][j].vida, equipo_retador[i][j].x+7, equipo_retador[i][j].y+25);
+			if(equipo_jugador[i][j].vida>0){
+				ctx.fillText(equipo_jugador[i][j].vida, equipo_jugador[i][j].x+7, equipo_jugador[i][j].y+25);
+			}
+			if(equipo_retador[i][j].vida>0){
+				ctx.fillText(equipo_retador[i][j].vida, equipo_retador[i][j].x+7, equipo_retador[i][j].y+25);
+			}
 			}
 		}
 	}
@@ -433,14 +444,12 @@ var render = function () {
 
 // LOOP PARA EJECUTAR EL JUEGO.
 var main = function () {
-	var now = Date.now();
-	var delta = now - then;
+	update();
+	animar();
 
-	update(delta / 1000);
-	render();
-	then = now;
 };
-
-// Let's play this game! -NPI
-var then = Date.now();
-setInterval(main, 1); // Execute as fast as possible
+function mover_sprite(){
+	actual = (actual + 1) % 2;
+}
+setInterval(main, 20); // Execute as fast as possible
+setInterval(mover_sprite, 400)
