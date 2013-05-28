@@ -3,8 +3,26 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Prototipo Juego</title>
+
+	<script type="text/javascript">
+	function xhrGet(reqUri,callback) {
+		var xhr = new XMLHttpRequest();
+
+		xhr.open("GET", reqUri, true);
+		xhr.onload = callback;
+
+		xhr.send();
+	}
+	</script>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/core.js"></script>
+	<script type="text/javascript" src="js/engine.js"></script>
+	<script type="text/javascript" src="js/entidad.js"></script>
+	<script type="text/javascript" src="js/unidad.js"></script>
+
 </head>
-<body>
+
+<body onload="myEngine.load()">
 	<style type="text/css">
 		body{
 			margin:0;padding:0;
@@ -13,11 +31,28 @@
 			float: left;
 			margin:0;
 		}
+		#start{
+			background-color: blue;
+			color: white;
+			border-radius: 5px;
+			moz-border-radius: 5px;
+			wbkit-border-radius: 5px;
+			width: 75px;
+			padding: 4px;
+			margin: auto;
+			text-align: center;
+			cursor: pointer;
+		}
 	</style>
 
-	<div id="contenedor"></div>
-	<script type="text/javascript" src="js/core.js"></script>
-	<script type="text/javascript" src="js/entidad.js"></script>
-	<script type="text/javascript" src="js/unidad.js"></script>
+	<div id="contenedor">
+		<div id="juego">
+            <canvas id="canvas" width="850" height="400"></canvas>
+        </div>
+        <div id="start" onclick="myEngine.start()" style="">INICIAR</div>
+	</div>
+
+
+	
 </body>
 </html>

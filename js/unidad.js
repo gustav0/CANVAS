@@ -1,31 +1,37 @@
 Unidad = Entidad.extend({
 
 	id: 0,
-	
+
 	/*
      * No se
      */
-    position: {},
+    posicion: {},
+    direccion:-1,
 
     /*
      * No se
      */
-    size: {
-        w: 48,
-        h: 48
-    },
-    init: function(position, controls, id) {
-        if (id) {
-            this.id = id;
+    size: {w:30,h:32},
+    tipo:null,
+
+    init: function(posicion, tipo, id) {
+        this.tipo = tipo;
+        this.id = id;
+        this.posicion = posicion;
+
+        this.img = myEngine.soldierImg;
+
+        this.frames = new Array();
+
+        for(var frame in myEngine.parsedJSON.frames){
+            var a = {x:null,y:null};
+            a.x=myEngine.parsedJSON.frames[frame].data.x;
+            a.y=myEngine.parsedJSON.frames[frame].data.y;
+            this.frames.push(a);
         }
-        if (controls) {
-            this.controls = controls;
-        }
-        controls: {
-            'up': 'up',
-        },
     },
 
     update: function() {
+        this.draw(this.img,this.posicion,this.size);
     }
 });

@@ -1,0 +1,17 @@
+{"frames": [
+{
+	"animacion": "0",
+	"frame": {"x":0,"y":0,"w":30,"h":32},
+	"mostrar": {"w":30,"h":32}
+},
+{
+	"animacion": "1",
+	"frame": {"x":31,"y":0,"w":30,"h":32},
+	"mostrar": {"w":30,"h":32}
+},
+{
+	"animacion": "2",
+	"frame": {"x":62,"y":0,"w":30,"h":32},
+	"mostrar": {"w":30,"h":32}
+}]
+}
