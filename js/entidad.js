@@ -1,5 +1,5 @@
 Entidad = Class.extend({
-	img:null,
+    img:null,
 	frames:[],
     frameActual:{x:0,y:0},
     i:0,
@@ -9,24 +9,16 @@ Entidad = Class.extend({
 
     update: function() {
     },
+    
     draw:function(img,pos,size){
-    	
-    	for(var frame in myEngine.parsedJSON.frames){
-
-    		this.finalDraw(img, myEngine.parsedJSON.frames[frame].data.h, myEngine.parsedJSON.frames[frame].data.w, 
-    			pos.x, pos.y, size.h, size.w);
-    		//console.log("draw: "+this.id+" -> x: "+pos.x+", pos.y: "+pos.y);
-
+    	for(var frame in this.frames){
+    		this.finalDraw(img, this.frames[frame].x, this.frames[frame].y, this.size.h, this.size.w, pos.x, pos.y, size.h, size.w);
     	}
-    		
-        
     },
-    finalDraw:function(img, sh, sw, px, py, h, w){
-    	myEngine.context.drawImage(img, this.frameActual.x, this.frameActual.y, sh, sw, px, py, h, w);
+
+    finalDraw:function(img, sx, sy, sh, sw, px, py, h, w){
+        var centerX = px - (w/2);
+        var centerY = py - (h/2);
+        myEngine.context.drawImage(img, this.frameActual.x, this.frameActual.y, sh, sw, centerX, centerY, h, w);
     },
-    getFrameActual:function(){
-    	//myEngine.context.clearRect(0,0,myEngine.canvas.width,myEngine.canvas.height);
-    	this.i = (this.i + 1) % 2;
-    	this.frameActual = this.frames[this.i];
-    }
 });
