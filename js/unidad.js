@@ -6,11 +6,15 @@ Unidad = Entidad.extend({
     size:{w:30,h:32},
     tipo:null,
     velocidad:null,
+
     /*
      * EQUIPO DE LA UNIDAD. 0 PARA NEUTRAL 1 PARA IZQUIERDA, 2 PARA DERECHA
      */
      equipo:null,
+
+
      rango:null,
+     target:null,
 
 
     init: function(id, tipo, posicion, size, equipo) {
@@ -93,8 +97,8 @@ Unidad = Entidad.extend({
                 if(i == myEngine.unidadesIzquierda.length-1) break;
                 i++;
             }
-           var aliado = {};
-           aliado.izquierda = myEngine.unidadesIzquierda[i].posicion.x;
+            var aliado = {};
+            aliado.izquierda = myEngine.unidadesIzquierda[i].posicion.x;
             aliado.derecha = myEngine.unidadesIzquierda[i].posicion.x + myEngine.unidadesIzquierda[i].size.w;
             aliado.arriba = myEngine.unidadesIzquierda[i].posicion.y;
             aliado.abajo = myEngine.unidadesIzquierda[i].posicion.y + myEngine.unidadesIzquierda[i].size.h;
@@ -108,6 +112,10 @@ Unidad = Entidad.extend({
         if (colision) return colision;
 
         for(var i = 0; i < myEngine.unidadesDerecha.length; i++){
+            if(i == myEngine.unidadesDerecha.indexOf(this)){
+                if(i == myEngine.unidadesDerecha.length-1) break;
+                i++;
+            }
             var rival = {};
             rival.izquierda = myEngine.unidadesDerecha[i].posicion.x;
             rival.derecha = myEngine.unidadesDerecha[i].posicion.x + myEngine.unidadesDerecha[i].size.w;

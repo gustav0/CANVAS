@@ -14,6 +14,19 @@
 		xhr.send();
 	}
 	</script>
+
+    <script type="text/javascript" src="js/EaselJS-release_v0.7.0/lib/easeljs-0.7.0.min.js"></script>
+    <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/Event.js"></script>
+    <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/EventDispatcher.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/utils/IndexOf.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/utils/Proxy.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/AbstractLoader.js"></script>
+    <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/LoadQueue.js"></script>
+    <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/TagLoader.js"></script>
+    <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/XHRLoader.js"></script>
+
+
+
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript" src="js/core.js"></script>
 	<script type="text/javascript" src="js/engine.js"></script>
@@ -49,8 +62,15 @@
 		<div id="juego">
             <canvas id="canvas" width="850" height="400"></canvas>
         </div>
+        <div id="juego2">
+            <canvas id="demoCanvas" width="850" height="400"></canvas>
+        </div>
         <div id="start" onclick="myEngine.start()" style="">INICIAR</div>
         <div id="start" onclick="myEngine.iniciarMove()" style="">MOVE</div>
+
+        <div id="start" onclick="iniciarEsta()" style="">Demo</div>
+
+        <input type="button" value="unpause" id="pauseBtn" onclick="togglePause();">
 	</div>
 
 

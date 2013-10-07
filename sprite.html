@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Prototipo Juego</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+
+	<script type="text/javascript" src="js/EaselJS-release_v0.7.0/lib/easeljs-0.7.0.min.js"></script>
+
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/Event.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/EventDispatcher.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/AbstractLoader.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/LoadQueue.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/TagLoader.js"></script>
+	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/XHRLoader.js"></script>
+
+	<script type="text/javascript">
+	var stage, holder;
+
+	function init() {
+		stage = new createjs.Stage('canvas');
+		holder = stage.addChild(new createjs.Container());
+
+		var ss = new createjs.SpriteSheet({
+			"animations": {
+				"stand": [0, 1, "stand", 0.05], // [frame_inicial, frame_final, nombre_frame_siguiente, velocidad]
+				"walk left": [3, 5],
+				"walk right": [6, 8],
+				"back": [9, 11]
+			},
+			"images": ["img/BlackGuard.png"],
+			"frames": {
+				"height": 30,
+				"width": 32,
+				"regX": 0,
+				"regY": 0,
+				"count": 12
+			}
+		});
+
+		var bguard = new createjs.Sprite(ss, "stand");
+		bguard.x = 10;
+		bguard.y = 5;
+		bguard.framerate = 30;
+		holder.addChild(bguard);
+
+		createjs.Ticker.addEventListener("tick", tick);
+		createjs.Ticker.setFPS(60);
+
+
+		createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+	}
+
+	function tick(event) {
+		var n = holder.getNumChildren();
+		for (var i = 0; i < n; i++) {
+			var child = holder.getChildAt(i);
+		}
+		stage.update();
+	}
+
+	// function handleJumpStart() {
+	// 	grant.gotoAndPlay("jump");
+	// }
+	</script>
+
+</head>
+
+<body onload="init()">
+	<style type="text/css">
+	body {
+		margin:0;
+		padding:0;
+	   }
+	   #contenedor {
+		   float: left;
+		   margin:0;
+		  }
+	</style>
+
+	<div id="contenedor">
+
+		<div id="prueba">
+			<canvas id="canvas" width="400" height="200"></canvas>
+		</div>
+	</div>
+
+
+
+</body>
+
+</html>
