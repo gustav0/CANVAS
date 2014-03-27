@@ -188,7 +188,7 @@ var Ticker = function() {
 	Ticker._addEventListener = Ticker.addEventListener;
 	Ticker.addEventListener = function() {
 		!Ticker._inited&&Ticker.init();
-		Ticker._addEventListener.apply(Ticker, arguments);
+		return Ticker._addEventListener.apply(Ticker, arguments);
 	};
 
 // private static properties:
@@ -383,7 +383,7 @@ var Ticker = function() {
 		// by default, calculate average for the past ~1 second:
 		ticks = Math.min(times.length, ticks||(Ticker.getFPS()|0));
 		for (var i=0; i<ticks; i++) { ttl += times[i]; }
-		return times/ticks;
+		return ttl/ticks;
 	};
 
 	/**

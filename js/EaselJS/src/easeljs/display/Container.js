@@ -77,6 +77,16 @@ var p = Container.prototype = new createjs.DisplayObject();
 	 * @default true
 	 **/
 	p.mouseChildren = true;
+	
+	/**
+	 * If false, the tick will not be propagated to children of this Container. This can provide some performance benefits.
+	 * In addition to preventing the "tick" event from being dispatched, it will also prevent tick related updates
+	 * on some display objects (ex. Sprite & MovieClip frame advancing, DOMElement visibility handling).
+	 * @property tickChildren
+	 * @type Boolean
+	 * @default true
+	 **/
+	p.tickChildren = true;
 
 // constructor:
 
@@ -315,10 +325,11 @@ var p = Container.prototype = new createjs.DisplayObject();
 	/**
 	 * Performs an array sort operation on the child list.
 	 *
-	 * <h4>Example</h4>
-	 *      var sortFunction = function(item1, item2, options) {
-	 *          if (item1 > item2) { return 1; }
-	 *          if (item1 < item2) { return -1; }
+	 * <h4>Example: Display children with a higher y in front.</h4>
+	 * 
+	 *      var sortFunction = function(obj1, obj2, options) {
+	 *          if (obj1.y > obj2.y) { return 1; }
+	 *          if (obj1.y < obj2.y) { return -1; }
 	 *          return 0;
 	 *      }
 	 *      container.sortChildren(sortFunction);
@@ -536,9 +547,11 @@ var p = Container.prototype = new createjs.DisplayObject();
 	 * @protected
 	 **/
 	p._tick = function(params) {
-		for (var i=this.children.length-1; i>=0; i--) {
-			var child = this.children[i];
-			if (child._tick) { child._tick(params); }
+		if (this.tickChildren) {
+			for (var i=this.children.length-1; i>=0; i--) {
+				var child = this.children[i];
+				if (child.tickEnabled && child._tick) { child._tick(params); }
+			}
 		}
 		this.DisplayObject__tick(params);
 	};
@@ -548,25 +561,30 @@ var p = Container.prototype = new createjs.DisplayObject();
 	 * @param {Number} x
 	 * @param {Number} y
 	 * @param {Array} arr
-	 * @param {Boolean} mouse If true, it will respect mouse interaction properties like mouseEnabled, mouseChildren, and hitArea.
+	 * @param {Boolean} mouse If true, it will respect mouse interaction properties like mouseEnabled, mouseChildren, and active listeners.
+	 * @param {Boolean} activeListener If true, there is an active mouse event listener.
 	 * @return {Array}
 	 * @protected
 	 **/
-	p._getObjectsUnderPoint = function(x, y, arr, mouse) {
+	p._getObjectsUnderPoint = function(x, y, arr, mouse, activeListener) {
 		var ctx = createjs.DisplayObject._hitTestContext;
 		var mtx = this._matrix;
+		activeListener = activeListener || (mouse&&this._hasMouseEventListener());
 
 		// draw children one at a time, and check if we get a hit:
-		var l = this.children.length;
+		var children = this.children;
+		var l = children.length;
 		for (var i=l-1; i>=0; i--) {
-			var child = this.children[i];
-			var hitArea = mouse&&child.hitArea;
+			var child = children[i];
+			var hitArea = child.hitArea;
 			if (!child.visible || (!hitArea && !child.isVisible()) || (mouse && !child.mouseEnabled)) { continue; }
 			// if a child container has a hitArea then we only need to check its hitArea, so we can treat it as a normal DO:
 			if (!hitArea && child instanceof Container) {
-				var result = child._getObjectsUnderPoint(x, y, arr, mouse);
-				if (!arr && result) { return result; }
+				var result = child._getObjectsUnderPoint(x, y, arr, mouse, activeListener);
+				if (!arr && result) { return (mouse && !this.mouseChildren) ? this : result; }
 			} else {
+				if (!activeListener && !child._hasMouseEventListener()) { continue; }
+				
 				child.getConcatenatedMatrix(mtx);
 				
 				if (hitArea) {

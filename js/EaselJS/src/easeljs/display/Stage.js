@@ -361,7 +361,7 @@ var p = Stage.prototype = new createjs.Container();
 		if (!this.canvas) { return; }
 		if (this.tickOnUpdate) {
 			this.dispatchEvent("tickstart");  // TODO: make cancellable?
-			this._tick((arguments.length ? arguments : null));
+			this.tickEnabled&&this._tick((arguments.length ? arguments : null));
 			this.dispatchEvent("tickend");
 		}
 		this.dispatchEvent("drawstart"); // TODO: make cancellable?
@@ -518,7 +518,7 @@ var p = Stage.prototype = new createjs.Container();
 			ls = this._eventListeners = {};
 			ls["mouseup"] = {t:t, f:function(e) { _this._handleMouseUp(e)} };
 			ls["mousemove"] = {t:t, f:function(e) { _this._handleMouseMove(e)} };
-			ls["dblclick"] = {t:t, f:function(e) { _this._handleDoubleClick(e)} };
+			ls["dblclick"] = {t:this.canvas, f:function(e) { _this._handleDoubleClick(e)} };
 			ls["mousedown"] = {t:this.canvas, f:function(e) { _this._handleMouseDown(e)} };
 
 			for (n in ls) {
@@ -589,6 +589,8 @@ var p = Stage.prototype = new createjs.Container();
 			data = this._pointerData[id] = {x:0,y:0};
 			// if it's the first new touch, then make it the primary pointer id:
 			if (this._primaryPointerID == null) { this._primaryPointerID = id; }
+			// if it's the mouse (id == -1) or the first new touch, then make it the primary pointer id:
+		    if (this._primaryPointerID == null || this._primaryPointerID == -1) { this._primaryPointerID = id; }
 		}
 		return data;
 	};
@@ -629,7 +631,7 @@ var p = Stage.prototype = new createjs.Container();
 		var oEvent = o.event;
 		if (oEvent && oEvent.hasEventListener("mousemove")) {
 			// this doesn't use _dispatchMouseEvent because it requires re-targeting.
-			oEvent.dispatchEvent(new createjs.MouseEvent("mousemove", false, false, o.x, o.y, e, id, (id == this._primaryPointerID), o.rawX, o.rawY), oTarget);
+			oEvent.dispatchEvent(new createjs.MouseEvent("mousemove", false, false, o.x, o.y, e, id, (id == this._primaryPointerID), o.rawX, o.rawY), o.target);
 		}
 
 		this.nextStage&&this.nextStage._handlePointerMove(id, e, pageX, pageY);
@@ -722,7 +724,7 @@ var p = Stage.prototype = new createjs.Container();
 	 * @param {MouseEvent} e
 	 **/
 	p._handleMouseDown = function(e) {
-		this._handlePointerDown(-1, e);
+		this._handlePointerDown(-1, e, e.pageX, e.pageY);
 	};
 
 	/**
@@ -740,7 +742,8 @@ var p = Stage.prototype = new createjs.Container();
 		this._dispatchMouseEvent(this, "stagemousedown", false, id, o, e);
 
 		o.target = this._getObjectsUnderPoint(o.x, o.y, null, true);
-		this._dispatchMouseEvent(o.target, "mousedown", true, id, o, e);
+		// TODO: holding onto the event is deprecated:
+		o.event =  this._dispatchMouseEvent(o.target, "mousedown", true, id, o, e);
 
 		this.nextStage&&this.nextStage._handlePointerDown(id, e, pageX, pageY);
 	};
@@ -834,6 +837,8 @@ var p = Stage.prototype = new createjs.Container();
 		*/
 		var evt = new createjs.MouseEvent(type, bubbles, false, o.x, o.y, nativeEvent, pointerId, pointerId==this._primaryPointerID, o.rawX, o.rawY);
 		target.dispatchEvent(evt);
+		// TODO: returning evt is deprecated:
+		return evt;
 	};
 
 createjs.Stage = Stage;

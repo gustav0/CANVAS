@@ -53,7 +53,7 @@ this.createjs = this.createjs||{};
  *
  *      data = {
  *          // DEFINING FRAMERATE:
- *          // this specifies the framerate that will be set on the SpriteSheet. See Spritesheet.framerate
+ *          // this specifies the framerate that will be set on the SpriteSheet. See {{#crossLink "SpriteSheet/framerate:property"}}{{/crossLink}}
  *          // for more information.
  *          framerate: 20,
  *
@@ -79,7 +79,7 @@ this.createjs = this.createjs||{};
  *          // DEFINING ANIMATIONS:
  *
  * 	        // simple animation definitions. Define a consecutive range of frames (begin to end inclusive).
- * 	        // optionally define a "next" animation to sequence to (or false to stop) and a playback "speed"
+ * 	        // optionally define a "next" animation to sequence to (or false to stop) and a playback "speed".
  * 	        animations: {
  * 	        	// start, end, next, speed
  * 	        	run: [0,8],
@@ -111,6 +111,10 @@ this.createjs = this.createjs||{};
  * 	        }
  *      }
  *
+ * <strong>Note that the <code>speed</code> property was added in EaselJS 0.7.0. Earlier versions had a <code>frequency</code>
+ * property instead, which was the inverse of speed. For example, a value of "4" would be 1/4 normal speed in earlier
+ * versions, but us 4x normal speed in 0.7.0+.</strong>
+ *
  * <h4>Example</h4>
  * To define a simple sprite sheet, with a single image "sprites.jpg" arranged in a regular 50x50 grid with two
  * animations, "run" looping from frame 0-4 inclusive, and "jump" playing from frame 5-8 and sequencing back to run:
@@ -122,6 +126,11 @@ this.createjs = this.createjs||{};
  *      };
  *      var spriteSheet = new createjs.SpriteSheet(data);
  *      var animation = new createjs.Sprite(spriteSheet, "run");
+ *
+ *
+ * <strong>Warning:</strong> Images loaded cross-origin will throw cross-origin security errors when interacted with
+ * using a mouse, using methods such as `getObjectUnderPoint`, using filters, or caching. You can get around this by
+ * setting `crossOrigin` flags on your images before passing them to EaselJS, eg: `img.crossOrigin="Anonymous";`
  *
  * @class SpriteSheet
  * @constructor
@@ -454,8 +463,8 @@ var p = SpriteSheet.prototype = new createjs.EventDispatcher();
 		var fh = this._frameHeight;
 		for (var i=0,imgs = this._images; i<imgs.length; i++) {
 			var img = imgs[i];
-			var cols = (img.width+1)/fw|0;
-			var rows = (img.height+1)/fh|0;
+			var cols = img.width/fw|0;
+			var rows = img.height/fh|0;
 			var ttl = this._numFrames>0 ? Math.min(this._numFrames-ttlFrames,cols*rows) : cols*rows;
 			for (var j=0;j<ttl;j++) {
 				this._frames.push({image:img, rect:new createjs.Rectangle(j%cols*fw,(j/cols|0)*fh,fw,fh), regX:this._regX, regY:this._regY });

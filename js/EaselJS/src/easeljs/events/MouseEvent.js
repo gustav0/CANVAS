@@ -38,8 +38,8 @@ this.createjs = this.createjs||{};
 
 // TODO: deprecated. @uses EventDispatcher
 /**
- * This is passed as the parameter to all mouse/pointer/touch related events on {{#crossLink "DisplayObject"}}{{/crossLink}}
- * instances.
+ * Passed as the parameter to all mouse/pointer/touch related events. For a listing of mouse events and their properties,
+ * see the {{#crossLink "DisplayObject"}}{{/crossLink}} and {{#crossLink "Stage"}}{{/crossLink}} event listings.
  * @class MouseEvent
  * @param {String} type The event type.
  * @param {Boolean} bubbles Indicates whether the event will bubble through the display list.
@@ -67,7 +67,7 @@ var p = MouseEvent.prototype = new createjs.Event();
 	 * user releases the mouse anywhere. This enables you to listen to mouse move interactions for the duration of a
 	 * press, which can be very useful for operations such as drag and drop.
 	 *
-	 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
+	 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class description for more information on mouse events.
 	 * @event mousemove
 	 * @since 0.6.0
 	 * @deprecated In favour of the DisplayObject "pressmove" event.
@@ -78,7 +78,7 @@ var p = MouseEvent.prototype = new createjs.Event();
 	 * user releases the mouse anywhere. This enables you to listen for a corresponding mouse up from a specific press,
 	 * which can be very useful for operations such as drag and drop.
 	 *
-	 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
+	 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class description for more information on mouse events.
 	 * @event mouseup
 	 * @since 0.6.0
 	 * @deprecated In favour of the DisplayObject "pressup" event.
@@ -168,6 +168,34 @@ var p = MouseEvent.prototype = new createjs.Event();
 	p.hasEventListener = null;
 	p._listeners = null;
 	createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.
+	
+// getter / setters:
+	/**
+	 * Returns the x position of the mouse in the local coordinate system of the current target (ie. the dispatcher).
+	 * @property localX
+	 * @type {Number}
+	 * @readonly
+	 */
+	p._get_localX = function() {
+		return this.currentTarget.globalToLocal(this.rawX, this.rawY).x;
+	};
+	
+	/**
+	 * Returns the y position of the mouse in the local coordinate system of the current target (ie. the dispatcher).
+	 * @property localY
+	 * @type {Number}
+	 * @readonly
+	 */
+	p._get_localY = function() {
+		return this.currentTarget.globalToLocal(this.rawX, this.rawY).y;
+	};
+	
+	try {
+		Object.defineProperties(p, {
+			localX: { get: p._get_localX },
+			localY: { get: p._get_localY }
+		});
+	} catch (e) {} // TODO: use Log
 
 // constructor:
 	/**

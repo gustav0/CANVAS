@@ -136,6 +136,15 @@ var DisplayObject = function() {
   this.initialize();
 };
 var p = DisplayObject.prototype = new createjs.EventDispatcher();
+	
+	/**
+	 * Listing of mouse event names. Used in _hasMouseEventListener.
+	 * @property _MOUSE_EVENTS
+	 * @protected
+	 * @static
+	 * @type {Array}
+	 **/
+	DisplayObject._MOUSE_EVENTS = ["click","dblclick","mousedown","mouseout","mouseover","pressmove","pressup","rollout","rollover"];
 
 	/**
 	 * Suppresses errors generated when using features like hitTest, mouse events, and {{#crossLink "getObjectsUnderPoint"}}{{/crossLink}}
@@ -314,13 +323,27 @@ var p = DisplayObject.prototype = new createjs.EventDispatcher();
 	/**
 	 * Indicates whether to include this object when running mouse interactions. Setting this to `false` for children
 	 * of a {{#crossLink "Container"}}{{/crossLink}} will cause events on the Container to not fire when that child is
-	 * clicked. Note that setting this property to `false` does not prevent the {{#crossLink "Container/getObjectsUnderPoint"}}{{/crossLink}}
+	 * clicked. Setting this property to `false` does not prevent the {{#crossLink "Container/getObjectsUnderPoint"}}{{/crossLink}}
 	 * method from returning the child.
+	 *
+	 * <strong>Note:</strong> In EaselJS 0.7.0, the mouseEnabled property will not work properly with nested Containers. Please
+	 * check out the latest NEXT version in <a href="https://github.com/CreateJS/EaselJS/tree/master/lib">GitHub</a> for an updated version with this issue resolved. The fix will be
+	 * provided in the next release of EaselJS.
 	 * @property mouseEnabled
 	 * @type {Boolean}
 	 * @default true
 	 **/
 	p.mouseEnabled = true;
+	
+	/**
+	 * If false, the tick will not run on this display object (or its children). This can provide some performance benefits.
+	 * In addition to preventing the "tick" event from being dispatched, it will also prevent tick related updates
+	 * on some display objects (ex. Sprite & MovieClip frame advancing, DOMElement visibility handling).
+	 * @property tickEnabled
+	 * @type Boolean
+	 * @default true
+	 **/
+	p.tickEnabled = true;
 
 	/**
 	 * An optional name for this display object. Included in {{#crossLink "DisplayObject/toString"}}{{/crossLink}} . Useful for
@@ -1262,7 +1285,7 @@ var p = DisplayObject.prototype = new createjs.EventDispatcher();
 	 **/
 	p._applyFilterBounds = function(x, y, width, height) {
 		var bounds, l, filters = this.filters;
-		if (!filters || !(l=filters.length)) { return; }
+		if (!filters || !(l=filters.length)) { return null; }
 		
 		for (var i=0; i<l; i++) {
 			var f = this.filters[i];
@@ -1319,6 +1342,20 @@ var p = DisplayObject.prototype = new createjs.EventDispatcher();
 		if ((y = y_d + ty) < minY) { minY = y; } else if (y > maxY) { maxY = y; }
 		
 		return bounds.initialize(minX, minY, maxX-minX, maxY-minY);
+	};
+	
+	/**
+	 * Indicates whether the display object has any mouse event listeners or a cursor.
+	 * @method _isMouseOpaque
+	 * @return {Boolean}
+	 * @protected
+	 **/
+	p._hasMouseEventListener = function() {
+		var evts = DisplayObject._MOUSE_EVENTS;
+		for (var i= 0, l=evts.length; i<l; i++) {
+			if (this.hasEventListener(evts[i])) { return true; }
+		}
+		return !!this.cursor;
 	};
 
 createjs.DisplayObject = DisplayObject;
