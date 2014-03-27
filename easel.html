@@ -1,183 +1,204 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>Prueba Easel JS</title>
-	<script type="text/javascript" src="js/jquery.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Prueba Easel JS</title>
+        <script type="text/javascript" src="js/jquery.js"></script>
 
-	<script type="text/javascript" src="js/EaselJS-release_v0.7.0/lib/easeljs-0.7.0.min.js"></script>
+        <script type="text/javascript" src="js/EaselJS-release_v0.7.0/lib/easeljs-0.7.0.min.js"></script>
 
-	<script type="text/javascript" src="js/EaselJS-release_v0.7.0/src/easeljs/utils/SpriteSheetUtils.js"></script>
-	<script type="text/javascript" src="js/EaselJS-release_v0.7.0/src/easeljs/utils/SpriteSheetBuilder.js"></script>
+        <script type="text/javascript" src="js/EaselJS-release_v0.7.0/src/easeljs/utils/SpriteSheetUtils.js"></script>
+        <script type="text/javascript" src="js/EaselJS-release_v0.7.0/src/easeljs/utils/SpriteSheetBuilder.js"></script>
 
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/Event.js"></script>
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/EventDispatcher.js"></script>
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/AbstractLoader.js"></script>
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/LoadQueue.js"></script>
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/TagLoader.js"></script>
-	<script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/XHRLoader.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/Event.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/createjs/events/EventDispatcher.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/AbstractLoader.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/LoadQueue.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/TagLoader.js"></script>
+        <script type="text/javascript" src="js/PreloadJS-release_v0.4.0/src/preloadjs/XHRLoader.js"></script>
 
-	<script type="text/javascript">
-	var stage, holder;
+        <script type="text/javascript">
+            var stage, holder;
 
-	function init(){
-		stage = new createjs.Stage('canvas');
-		holder = stage.addChild(new createjs.Container());
+            function init() {
+                stage = new createjs.Stage('canvas');
+                holder = stage.addChild(new createjs.Container());
 
-		var color = ['blue', 'green', 'red', 'yellow', 'black', 'brown', 'orange', 'purple'];
+                var color = ['blue', 'green', 'red', 'yellow', 'black', 'brown', 'orange', 'purple'];
 
-		for (var i=0; i<8; i++){
-			var item = new createjs.Shape();
-			item.graphics.beginFill(color[i]).drawCircle(0, 0, 20);
-			item.x = Math.random()*240 + 50;
-			item.y = Math.random()*120 + 60;
-			item.dir = (i+1);
-			item.active = true;
-			item.addEventListener("pressmove",function(evt) {
-				item.active = false;
-				evt.currentTarget.x = evt.stageX;
-				evt.currentTarget.y = evt.stageY;
-			});
-			item.addEventListener("pressup", function(evt) { item.active = true; console.log(item.active); })
-
-
-			holder.addChild(item);
-		}
-
-
-		createjs.Ticker.addEventListener("tick", tick);
-		createjs.Ticker.setFPS(60);
+                for (var i = 0; i < 8; i++) {
+                    var item = new createjs.Shape();
+                    item.graphics.beginFill(color[i]).drawCircle(0, 0, 20);
+                    item.x = Math.random() * 240 + 50;
+                    item.y = Math.random() * 120 + 60;
+                    item.dir = (i + 1);
+                    item.active = true;
+                    item.addEventListener("pressmove", function(evt) {
+                        item.active = false;
+                        evt.currentTarget.x = evt.stageX;
+                        evt.currentTarget.y = evt.stageY;
+                    });
+                    item.addEventListener("pressup", function(evt) {
+                        item.active = true;
+                        console.log(item.active);
+                    })
 
 
-		createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNC;
-	}
-
-	function tick(event) { 
-		// pausar animacion
-		if(!createjs.Ticker.getPaused()){
-			// animacion basada en tiempo y no en frame rates (fps)
-			var move = [
-				event.delta/1000*80,
-				event.delta/1000*260,
-				event.delta/1000*240,
-				event.delta/1000*320,
-				event.delta/1000*400,
-				event.delta/1000*480,
-				event.delta/1000*560,
-				event.delta/1000*640, ];
-
-			var n = holder.getNumChildren();
-
-			for(var i=0; i<n; i++){
-				//Obtener hijo
-				var child = holder.getChildAt(i);
-				//alpha (transparencia)
-				child.alpha = 0.3;
-				// globalToLocal (obtener valor en tiempo real)
-				var pt = child.globalToLocal(stage.mouseX, stage.mouseY);
-				// hitTest (colision)
-				if (child.hitTest(pt.x, pt.y)) { child.alpha = 1; }
-
-				var rnd = Math.round(Math.random()*9);
-				if(child.active == false){
-					child.dir = 5;
-				}
+                    holder.addChild(item);
+                }
 
 
-				if(child.dir == 9){
-					child.x += move[i];
-					child.y -= move[i];
-					if (child.y <= 20 || child.x >= stage.canvas.width-20) { child.dir = rnd; } 
-
-				}else if(child.dir == 8){
-					child.y -= move[i];
-					if (child.y <= 20) { child.dir = rnd; } 
-
-				}else if(child.dir == 7){
-					child.x -= move[i];
-					child.y -= move[i];
-					if (child.y <= 	20 || child.x <= 20) { child.dir = rnd; } 
-
-				}else if(child.dir == 6){
-					child.x += move[i];
-					if (child.x >= stage.canvas.width-20) { child.dir = rnd; } 
-
-				} else if(child.dir == 5){
-					child.dir = rnd;
-
-				}else if(child.dir == 4){
-					child.x -= move[i];
-					if (child.x <= 	20) { child.dir = rnd; } 
-
-				}else if(child.dir == 3){
-					child.x += move[i];
-					child.y += move[i];
-					if (child.y >= 	stage.canvas.height-20 || child.x >= stage.canvas.width-20) { child.dir = rnd; } 
-
-				}else if(child.dir == 2){
-					child.y += move[i];
-					if (child.y >= 	stage.canvas.height-20) { child.dir = rnd; } 
-
-				}else if(child.dir == 1){
-					child.x -= move[i];
-					child.y += move[i];
-					if (child.y >= 	stage.canvas.height-20 || child.x <= 0) { child.dir = rnd; } 
-				}else if(child.dir == 0){
-					child.dir = rnd;
-				}
-			}
-		stage.update();
-		}
-	}
-
-	function togglePause() {
-		var paused = !createjs.Ticker.getPaused();
-		createjs.Ticker.setPaused(paused);
-		document.getElementById("btnPausa").value = paused ? "play" : "pause";
-	}
-	
-		
-	</script>
+                createjs.Ticker.addEventListener("tick", tick);
+                createjs.Ticker.setFPS(60);
 
 
+                createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNC;
+            }
+
+            function tick(event) {
+                // pausar animacion
+                if (!createjs.Ticker.getPaused()) {
+                    // animacion basada en tiempo y no en frame rates (fps)
+                    var move = [
+                        event.delta / 1000 * 80,
+                        event.delta / 1000 * 260,
+                        event.delta / 1000 * 240,
+                        event.delta / 1000 * 320,
+                        event.delta / 1000 * 400,
+                        event.delta / 1000 * 480,
+                        event.delta / 1000 * 560,
+                        event.delta / 1000 * 640, ];
+
+                    var n = holder.getNumChildren();
+
+                    for (var i = 0; i < n; i++) {
+                        //Obtener hijo
+                        var child = holder.getChildAt(i);
+                        //alpha (transparencia)
+                        child.alpha = 0.3;
+                        // globalToLocal (obtener valor en tiempo real)
+                        var pt = child.globalToLocal(stage.mouseX, stage.mouseY);
+                        // hitTest (colision)
+                        if (child.hitTest(pt.x, pt.y)) {
+                            child.alpha = 1;
+                        }
+
+                        var rnd = Math.round(Math.random() * 9);
+                        if (child.active == false) {
+                            child.dir = 5;
+                        }
 
 
-</head>
+                        if (child.dir == 9) {
+                            child.x += move[i];
+                            child.y -= move[i];
+                            if (child.y <= 20 || child.x >= stage.canvas.width - 20) {
+                                child.dir = rnd;
+                            }
 
-<body onload="init()">
-	<style type="text/css">
-		body{
-			margin:0;padding:0;
-		}
-		#contenedor{
-			float: left;
-			margin:0;
-		}
-		#start{
-			background-color: blue;
-			color: white;
-			border-radius: 5px;
-			moz-border-radius: 5px;
-			wbkit-border-radius: 5px;
-			width: 75px;
-			padding: 4px;
-			margin: auto;
-			text-align: center;
-			cursor: pointer;
-		}
-	</style>
+                        } else if (child.dir == 8) {
+                            child.y -= move[i];
+                            if (child.y <= 20) {
+                                child.dir = rnd;
+                            }
 
-	<div id="contenedor">
+                        } else if (child.dir == 7) {
+                            child.x -= move[i];
+                            child.y -= move[i];
+                            if (child.y <= 20 || child.x <= 20) {
+                                child.dir = rnd;
+                            }
 
-		<div id="prueba">
-			<canvas id="canvas" width="400" height="200"></canvas>
-		</div>
+                        } else if (child.dir == 6) {
+                            child.x += move[i];
+                            if (child.x >= stage.canvas.width - 20) {
+                                child.dir = rnd;
+                            }
+
+                        } else if (child.dir == 5) {
+                            child.dir = rnd;
+
+                        } else if (child.dir == 4) {
+                            child.x -= move[i];
+                            if (child.x <= 20) {
+                                child.dir = rnd;
+                            }
+
+                        } else if (child.dir == 3) {
+                            child.x += move[i];
+                            child.y += move[i];
+                            if (child.y >= stage.canvas.height - 20 || child.x >= stage.canvas.width - 20) {
+                                child.dir = rnd;
+                            }
+
+                        } else if (child.dir == 2) {
+                            child.y += move[i];
+                            if (child.y >= stage.canvas.height - 20) {
+                                child.dir = rnd;
+                            }
+
+                        } else if (child.dir == 1) {
+                            child.x -= move[i];
+                            child.y += move[i];
+                            if (child.y >= stage.canvas.height - 20 || child.x <= 0) {
+                                child.dir = rnd;
+                            }
+                        } else if (child.dir == 0) {
+                            child.dir = rnd;
+                        }
+                    }
+                    stage.update();
+                }
+            }
+
+            function togglePause() {
+                var paused = !createjs.Ticker.getPaused();
+                createjs.Ticker.setPaused(paused);
+                document.getElementById("btnPausa").value = paused ? "play" : "pause";
+            }
 
 
-		<input type="button" value="pause" id="btnPausa" onclick="togglePause();">
-	</div>
+        </script>
 
 
-	
-</body>
+
+
+    </head>
+
+    <body onload="init()">
+        <style type="text/css">
+            body{
+                margin:0;padding:0;
+            }
+            #contenedor{
+                float: left;
+                margin:0;
+            }
+            #start{
+                background-color: blue;
+                color: white;
+                border-radius: 5px;
+                moz-border-radius: 5px;
+                wbkit-border-radius: 5px;
+                width: 75px;
+                padding: 4px;
+                margin: auto;
+                text-align: center;
+                cursor: pointer;
+            }
+        </style>
+
+        <div id="contenedor">
+
+            <div id="prueba">
+                <canvas id="canvas" width="400" height="200"></canvas>
+            </div>
+
+
+            <input type="button" value="pause" id="btnPausa" onclick="togglePause();">
+        </div>
+
+
+
+    </body>
 </html>
